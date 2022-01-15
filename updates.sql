@@ -1,64 +1,64 @@
-/* Таблица справочник стран */
--- 1. создание таблицы
+/* РўР°Р±Р»РёС†Р° СЃРїСЂР°РІРѕС‡РЅРёРє СЃС‚СЂР°РЅ */
+-- 1. СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹
 CREATE TABLE countries (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-  name VARCHAR(130) NOT NULL UNIQUE COMMENT "Название страны",
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки",  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления строки"
-) COMMENT "Справочник стран";
--- 2. заполнение таблицы значениями из таблицы profiles:
+  name VARCHAR(130) NOT NULL UNIQUE COMMENT "РќР°Р·РІР°РЅРёРµ СЃС‚СЂР°РЅС‹",
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ СЃС‚СЂРѕРєРё",  
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ СЃС‚СЂРѕРєРё"
+) COMMENT "РЎРїСЂР°РІРѕС‡РЅРёРє СЃС‚СЂР°РЅ";
+-- 2. Р·Р°РїРѕР»РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёСЏРјРё РёР· С‚Р°Р±Р»РёС†С‹ profiles:
 INSERT INTO countries (name) (SELECT country FROM profiles);
--- 3. удаление ненужных столбцов:
+-- 3. СѓРґР°Р»РµРЅРёРµ РЅРµРЅСѓР¶РЅС‹С… СЃС‚РѕР»Р±С†РѕРІ:
 ALTER TABLE profiles DROP COLUMN city;
 ALTER TABLE profiles DROP COLUMN country;
 
 
-/* Таблица справочник городов */
--- 1. создание таблицы
+/* РўР°Р±Р»РёС†Р° СЃРїСЂР°РІРѕС‡РЅРёРє РіРѕСЂРѕРґРѕРІ */
+-- 1. СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹
 CREATE TABLE cities (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(130) NOT NULL COMMENT "Название города",
-  country_id INT COMMENT "Ссылка на страну",
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Время создания строки",  
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Время обновления строки"
-) COMMENT "Города";
--- 2. заполнение таблицы значениями из таблицы profiles:
+  name VARCHAR(130) NOT NULL COMMENT "РќР°Р·РІР°РЅРёРµ РіРѕСЂРѕРґР°",
+  country_id INT COMMENT "РЎСЃС‹Р»РєР° РЅР° СЃС‚СЂР°РЅСѓ",
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ СЃРѕР·РґР°РЅРёСЏ СЃС‚СЂРѕРєРё",  
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "Р’СЂРµРјСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ СЃС‚СЂРѕРєРё"
+) COMMENT "Р“РѕСЂРѕРґР°";
+-- 2. Р·Р°РїРѕР»РЅРµРЅРёРµ С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёСЏРјРё РёР· С‚Р°Р±Р»РёС†С‹ profiles:
 INSERT INTO cities (name) (SELECT city FROM profiles);
--- 3. заполнение внешнего ключа 'country_id' индексами из таблицы стран:
+-- 3. Р·Р°РїРѕР»РЅРµРЅРёРµ РІРЅРµС€РЅРµРіРѕ РєР»СЋС‡Р° 'country_id' РёРЅРґРµРєСЃР°РјРё РёР· С‚Р°Р±Р»РёС†С‹ СЃС‚СЂР°РЅ:
 UPDATE cities SET country_id = FLOOR(1 + RAND() * 100);
 
 
-/* Таблица users */
--- 1. приравнял дату создания записи в таблицах users и profiles:
+/* РўР°Р±Р»РёС†Р° users */
+-- 1. РїСЂРёСЂР°РІРЅСЏР» РґР°С‚Сѓ СЃРѕР·РґР°РЅРёСЏ Р·Р°РїРёСЃРё РІ С‚Р°Р±Р»РёС†Р°С… users Рё profiles:
 UPDATE users SET created_at = (SELECT created_at FROM profiles WHERE users.id = profiles.user_id);
--- 2. проверка на корректность данных в столбцах создания и обновления записи и их корректировка:
+-- 2. РїСЂРѕРІРµСЂРєР° РЅР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РґР°РЅРЅС‹С… РІ СЃС‚РѕР»Р±С†Р°С… СЃРѕР·РґР°РЅРёСЏ Рё РѕР±РЅРѕРІР»РµРЅРёСЏ Р·Р°РїРёСЃРё Рё РёС… РєРѕСЂСЂРµРєС‚РёСЂРѕРІРєР°:
 SELECT * FROM users WHERE created_at > updated_at;
 UPDATE users SET updated_at = NOW() WHERE created_at  > updated_at;
 
 
-/* Таблица profiles */
--- 1. изменил тип столбца 'gender':
+/* РўР°Р±Р»РёС†Р° profiles */
+-- 1. РёР·РјРµРЅРёР» С‚РёРї СЃС‚РѕР»Р±С†Р° 'gender':
 ALTER TABLE profiles MODIFY COLUMN gender ENUM('M', 'F');
--- 2. добавил столбец 'city_id' как внешний ключ к таблице городов:
+-- 2. РґРѕР±Р°РІРёР» СЃС‚РѕР»Р±РµС† 'city_id' РєР°Рє РІРЅРµС€РЅРёР№ РєР»СЋС‡ Рє С‚Р°Р±Р»РёС†Рµ РіРѕСЂРѕРґРѕРІ:
 ALTER TABLE profiles ADD COLUMN city_id INT AFTER birthday;
--- 3. заполнение столбца с внешним ключом на таблицу городов:
+-- 3. Р·Р°РїРѕР»РЅРµРЅРёРµ СЃС‚РѕР»Р±С†Р° СЃ РІРЅРµС€РЅРёРј РєР»СЋС‡РѕРј РЅР° С‚Р°Р±Р»РёС†Сѓ РіРѕСЂРѕРґРѕРІ:
 UPDATE profiles SET city_id = FLOOR(1 + RAND() * 100);
 
 
-/* Таблица messages без изменений */
+/* РўР°Р±Р»РёС†Р° messages Р±РµР· РёР·РјРµРЅРµРЅРёР№ */
 
-/* Таблица communities без изменений */
+/* РўР°Р±Р»РёС†Р° communities Р±РµР· РёР·РјРµРЅРµРЅРёР№ */
 
-/* Таблица communities_users без изменений */
+/* РўР°Р±Р»РёС†Р° communities_users Р±РµР· РёР·РјРµРЅРµРЅРёР№ */
 
-/* Таблица media_types без изменений */
+/* РўР°Р±Р»РёС†Р° media_types Р±РµР· РёР·РјРµРЅРµРЅРёР№ */
 
 
-/* Таблица media */
--- 1. добавил столбец 'is_shared' как признак того, что файл был расшарен, а также заполнил его данными:
+/* РўР°Р±Р»РёС†Р° media */
+-- 1. РґРѕР±Р°РІРёР» СЃС‚РѕР»Р±РµС† 'is_shared' РєР°Рє РїСЂРёР·РЅР°Рє С‚РѕРіРѕ, С‡С‚Рѕ С„Р°Р№Р» Р±С‹Р» СЂР°СЃС€Р°СЂРµРЅ, Р° С‚Р°РєР¶Рµ Р·Р°РїРѕР»РЅРёР» РµРіРѕ РґР°РЅРЅС‹РјРё:
 ALTER TABLE media ADD COLUMN is_shared BOOLEAN AFTER user_id;
 UPDATE media SET is_shared = FLOOR(0 + RAND() * 2);
--- 2. создал и заполнил данными временную таблицу с расширениями файлов для генерации путей в столбце 'filename':
+-- 2. СЃРѕР·РґР°Р» Рё Р·Р°РїРѕР»РЅРёР» РґР°РЅРЅС‹РјРё РІСЂРµРјРµРЅРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ СЃ СЂР°СЃС€РёСЂРµРЅРёСЏРјРё С„Р°Р№Р»РѕРІ РґР»СЏ РіРµРЅРµСЂР°С†РёРё РїСѓС‚РµР№ РІ СЃС‚РѕР»Р±С†Рµ 'filename':
 CREATE TEMPORARY TABLE extensions (name VARCHAR(10));
 INSERT INTO extensions VALUES ('jpeg'), ('mp4'), ('mp3'), ('avi'), ('png');
 SELECT * FROM extensions;
@@ -68,9 +68,9 @@ UPDATE media SET filename = CONCAT(
 	'.',
 	(SELECT name FROM extensions ORDER  BY RAND() LIMIT 1)
 );
--- 3. так как при генерации данных в сервисе filldb не было типа json, пришлось заново поменять тип столбца 'metadata':
+-- 3. С‚Р°Рє РєР°Рє РїСЂРё РіРµРЅРµСЂР°С†РёРё РґР°РЅРЅС‹С… РІ СЃРµСЂРІРёСЃРµ filldb РЅРµ Р±С‹Р»Рѕ С‚РёРїР° json, РїСЂРёС€Р»РѕСЃСЊ Р·Р°РЅРѕРІРѕ РїРѕРјРµРЅСЏС‚СЊ С‚РёРї СЃС‚РѕР»Р±С†Р° 'metadata':
 ALTER TABLE media MODIFY COLUMN metadata JSON;
--- 4. заполнил метаданные:
+-- 4. Р·Р°РїРѕР»РЅРёР» РјРµС‚Р°РґР°РЅРЅС‹Рµ:
 UPDATE media SET metadata = CONCAT(
 	'{"owner": "',
 	(SELECT CONCAT( first_name, ' ', last_name) FROM users WHERE id = user_id),
@@ -78,20 +78,20 @@ UPDATE media SET metadata = CONCAT(
 );
 
 
-/* Таблица friendship_statuses без изменений */
+/* РўР°Р±Р»РёС†Р° friendship_statuses Р±РµР· РёР·РјРµРЅРµРЅРёР№ */
 
 
-/* Таблица friendship */
--- 1. добавил столбец 'rejected_at' для того, чтобы отслеживать время в случае отказа от предложения дружбы:
+/* РўР°Р±Р»РёС†Р° friendship */
+-- 1. РґРѕР±Р°РІРёР» СЃС‚РѕР»Р±РµС† 'rejected_at' РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РѕС‚СЃР»РµР¶РёРІР°С‚СЊ РІСЂРµРјСЏ РІ СЃР»СѓС‡Р°Рµ РѕС‚РєР°Р·Р° РѕС‚ РїСЂРµРґР»РѕР¶РµРЅРёСЏ РґСЂСѓР¶Р±С‹:
 ALTER TABLE friendship ADD COLUMN rejected_at DATETIME AFTER confirmed_at;
--- 2. добавил столбец 'rejected_by_id' для записи id user'a, который дал отказ:
+-- 2. РґРѕР±Р°РІРёР» СЃС‚РѕР»Р±РµС† 'rejected_by_id' РґР»СЏ Р·Р°РїРёСЃРё id user'a, РєРѕС‚РѕСЂС‹Р№ РґР°Р» РѕС‚РєР°Р·:
 ALTER TABLE friendship  ADD COLUMN rejected_by_id INT AFTER rejected_at;
--- 3. проставил значения в столбец 'rejected_at':
+-- 3. РїСЂРѕСЃС‚Р°РІРёР» Р·РЅР°С‡РµРЅРёСЏ РІ СЃС‚РѕР»Р±РµС† 'rejected_at':
 UPDATE friendship SET rejected_at = updated_at WHERE FLOOR(0 + RAND() * 2);
--- 4. проставил значения в столбец 'rejected_by_id' (для того, чтобы значения брались рандомно из столбцов 'user_id' и 'friend_id' воспользовался разными условиями):
+-- 4. РїСЂРѕСЃС‚Р°РІРёР» Р·РЅР°С‡РµРЅРёСЏ РІ СЃС‚РѕР»Р±РµС† 'rejected_by_id' (РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ Р·РЅР°С‡РµРЅРёСЏ Р±СЂР°Р»РёСЃСЊ СЂР°РЅРґРѕРјРЅРѕ РёР· СЃС‚РѕР»Р±С†РѕРІ 'user_id' Рё 'friend_id' РІРѕСЃРїРѕР»СЊР·РѕРІР°Р»СЃСЏ СЂР°Р·РЅС‹РјРё СѓСЃР»РѕРІРёСЏРјРё):
 UPDATE  friendship SET rejected_by_id = user_id WHERE rejected_at IS NOT NULL AND FLOOR(0 + RAND() * 2);
 UPDATE  friendship SET rejected_by_id = friend_id WHERE rejected_at IS NOT NULL AND rejected_by_id IS NULL;
--- 5. обновил столбец 'friendship_status_id' в записях, где запрос дружбы отклонён пользователем, остальные записи в данном столбце сделал равными другим статусам:
+-- 5. РѕР±РЅРѕРІРёР» СЃС‚РѕР»Р±РµС† 'friendship_status_id' РІ Р·Р°РїРёСЃСЏС…, РіРґРµ Р·Р°РїСЂРѕСЃ РґСЂСѓР¶Р±С‹ РѕС‚РєР»РѕРЅС‘РЅ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј, РѕСЃС‚Р°Р»СЊРЅС‹Рµ Р·Р°РїРёСЃРё РІ РґР°РЅРЅРѕРј СЃС‚РѕР»Р±С†Рµ СЃРґРµР»Р°Р» СЂР°РІРЅС‹РјРё РґСЂСѓРіРёРј СЃС‚Р°С‚СѓСЃР°Рј:
 UPDATE friendship SET friendship_status_id = 2 WHERE rejected_at IS NOT NULL;
 UPDATE friendship SET friendship_status_id = 1 WHERE rejected_at IS NULL AND friendship_status_id = 2 AND user_id < 51;
 UPDATE friendship SET friendship_status_id = 3 WHERE rejected_at IS NULL AND friendship_status_id = 2 AND user_id > 50;
